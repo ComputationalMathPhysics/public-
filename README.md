@@ -1,2 +1,2 @@
-# Sample kubernetes manfiest files
-> Blockquote kubectl apply -f manifest.yaml
+# Sample kubernetes manifest files
+> kubectl apply -f manifest.yaml
