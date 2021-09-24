@@ -1,4 +1,4 @@
-steps
+Instructions on how to deploy containers into a kubernetes cluster from a private registry. 
 
 # 1. 
 # a) aws cli installed and credentials to pull an image from the ecr
