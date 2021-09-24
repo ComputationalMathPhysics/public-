@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: esign-document-service
+  namespace: dev-env
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+  selector:
+    app: esign-document-app  # must have same label as the pod's label     
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: esign-document
+  namespace: dev-env
+  labels:
+    app: esign-document-app
+spec:
+  containers:
+    - name: esign-document
+      image: <aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com/<image-name>:<tag>
+      imagePullPolicy: Always
+      ports:
+        - containerPort: 3000  # ==> put in port from docker definition
+  imagePullSecrets:
+    - name: regcred
