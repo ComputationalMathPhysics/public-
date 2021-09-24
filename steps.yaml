@@ -1,9 +1,9 @@
-Instructions on how to deploy containers into a kubernetes cluster from a private registry. 
+steps
 
-# 1. 
-# a) aws cli installed and credentials to pull an image from the ecr
+# 1. make sure you have aws cli and kubectl access and aws credentials
+# a) aws cli is installed and aws credentials to pull an image from the ecr
 # b) kubectl cli  
-# c) get this data points for your specific environment
+# c) get the data points below for your AWS specific environment
 
 ECR Image Registry URL: https://aws_account_id.dkr.ecr.region.amazonaws.com.
 
@@ -31,10 +31,11 @@ kubectl create secret docker-registry regcred \
   --namespace=dev-env
 
 
-# 3. deploy a single pod with a NodePort service. repeat the process for each docker image to validate the deployment 
+# 4. deploy a single pod with a NodePort service. repeat the process for each docker image to validate the deployment 
 
-# kubectl apply -f manifest.yaml
+kubectl apply -f esign-document-service.yaml
 
+# contents of esign-document-service.yaml
 
 apiVersion: v1
 kind: Service
@@ -65,7 +66,7 @@ spec:
   imagePullSecrets:
     - name: regcred
 
-# 3. validate pod creation
+# 5. validate pod creation
 kubectl get pods
 
 # give me more information on service
@@ -74,11 +75,9 @@ kubectl describe service esign-document-service
 # give me more information on pod
 kubectl describe pod esign-document
 
-# delete the pod
-kubectl delete pod esign-document
+# 6. deployment one container with a replication set
 
-
-# deployment one container with a replication set
+kubectl apply -f esign-document-deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment
@@ -116,3 +115,8 @@ spec:
     - protocol: TCP
       port: 27017         # service port    
       targetPort: ABCDE   # container port, targetPort == spec.template.spec.containers.name.image.ports.containerPort from deployment yaml
+
+
+# 7. validate deployments
+
+kubectl get deployments
