@@ -1,6 +1,6 @@
 steps
 
-the steps here will be provide enough syntax and background to deploy the smart sign solution in dev,qa and with some adjustments in stage and prod.
+the steps here will provide enough syntax and background to deploy the smart sign solution in dev and qa (using namespaces) and with some adjustments in stage and prod.
 
 # 1. prerequistes before you get started
 # a) you will need the aws cli and aws credentials to pull an image from the ecr
