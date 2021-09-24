@@ -33,7 +33,7 @@ kubectl create secret docker-registry regcred \
 
 # 3. deploy a single pod with a NodePort service. repeat the process for each docker image to validate the deployment 
 
-# kubectl apply -f manifest.yml
+# kubectl apply -f manifest.yaml
 
 
 apiVersion: v1
