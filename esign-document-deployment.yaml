@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esign-document-deployment
+  labels:
+    app: esign-document-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+     app: esign-document-app
+  template:                                 # template for the pod definition
+    metadata:
+      labels:
+        app: esign-document-app
+    spec:
+      containers:
+      - name: esign-document
+        image: <aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com/<image-name>:<tag>
+        imagePullPolicy: Always
+        ports: 
+        - containerPort: ABCDE # ==> port must match port from docker file definition
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esign-document-service   # random name
+spec:
+  selector:                      # connect to pod through the label
+    app: esign-document-app      # must have same value as template.metadata.labels.app from deployment yaml
+  ports:
+    - protocol: TCP
+      port: 27017         # service port    
+      targetPort: ABCDE   # container port, targetPort == spec.template.spec.containers.name.image.ports.containerPort from deployment yaml
