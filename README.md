@@ -8,4 +8,4 @@ step by step with syntax
 deployment and service objects - use this to create replication sets that sit behind a service
 
 ## esign-document-service.yaml
-service and pod objects - use this to validate that a pod can be successfully deployed
+service and pod objects - use this to validate that a pod can be successfully deployed with a service
