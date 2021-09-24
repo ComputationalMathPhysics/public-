@@ -1,0 +1,118 @@
+Instructions on how to deploy containers into a kubernetes cluster from a private registry. 
+
+# 1. 
+# a) aws cli installed and credentials to pull an image from the ecr
+# b) kubectl cli  
+# c) get this data points for your specific environment
+
+ECR Image Registry URL: https://aws_account_id.dkr.ecr.region.amazonaws.com.
+
+<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com/<image-name>:<tag>
+# where
+<aws-account-id> - your account id, e.g. e9ae3c220b23
+<aws-region> - aws region name 
+<image-name> - image name
+<tag> - image tag, usually defines a version or simply use latest
+
+
+# 2. create a namespace. useful to have a dev cluster and qa cluster on the same physical kubernetes cluster.  
+kubectl create namespace dev-env # for dev
+kubectl create namespace qa-env  # for qa
+
+
+# 3. Create a registry secret in the  namespace that would be used to pull an image from the private ECR repository:
+# where regcred == name of secret
+# see https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+
+kubectl create secret docker-registry regcred \
+  --docker-server=<aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com \
+  --docker-username=AWS \
+  --docker-password=$(aws ecr get-login-password) \
+  --namespace=dev-env
+
+
+# 3. deploy a single pod with a NodePort service. repeat the process for each docker image to validate the deployment 
+
+# kubectl apply -f manifest.yml
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: esign-document-service
+  namespace: dev-env
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+  selector:
+    app: esign-document-app  # must have same label as the pod's label     
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: esign-document
+  namespace: dev-env
+  labels:
+    app: esign-document-app
+spec:
+  containers:
+    - name: esign-document
+      image: <aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com/<image-name>:<tag>
+      imagePullPolicy: Always
+      ports:
+        - containerPort: 3000  # ==> put in port from docker definition
+  imagePullSecrets:
+    - name: regcred
+
+# 3. validate pod creation
+kubectl get pods
+
+# give me more information on service
+kubectl describe service esign-document-service
+
+# give me more information on pod
+kubectl describe pod esign-document
+
+# delete the pod
+kubectl delete pod esign-document
+
+
+# deployment one container with a replication set
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esign-document-deployment
+  labels:
+    app: esign-document-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+     app: esign-document-app
+  template:                                 # template for the pod definition
+    metadata:
+      labels:
+        app: esign-document-app
+    spec:
+      containers:
+      - name: esign-document
+        image: <aws-account-id>.dkr.ecr.<aws-region>.amazonaws.com/<image-name>:<tag>
+        imagePullPolicy: Always
+        ports: 
+        - containerPort: ABCDE # ==> port must match port from docker file definition
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esign-document-service   # random name
+spec:
+  selector:                      # connect to pod through the label
+    app: esign-document-app      # must have same value as template.metadata.labels.app from deployment yaml
+  ports:
+    - protocol: TCP
+      port: 27017         # service port    
+      targetPort: ABCDE   # container port, targetPort == spec.template.spec.containers.name.image.ports.containerPort from deployment yaml
