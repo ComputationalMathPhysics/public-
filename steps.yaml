@@ -1,5 +1,3 @@
-steps
-
 the steps here will provide enough syntax and background to deploy the smart sign solution in dev and qa (using namespaces) and with some adjustments in stage and prod.
 
 # 1. prerequistes before you get started
