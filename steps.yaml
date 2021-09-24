@@ -1,9 +1,11 @@
 steps
 
-# 1. make sure you have the aws cli, kubectl access and aws credentials
-# a) aws cli is installed and aws credentials to pull an image from the ecr
-# b) kubectl cli access  
-# c) get the data points below for your AWS specific environment
+the steps here will be provide enough syntax and background to deploy the smart sign solution in dev,qa and with some adjustments in stage and prod.
+
+# 1. prerequistes before you get started
+# a) you will need the aws cli and aws credentials to pull an image from the ecr
+# b) you will need access to the kubectl cli  
+# c) you will need the data points below for your AWS specific environment
 
 ECR Image Registry URL: https://aws_account_id.dkr.ecr.region.amazonaws.com.
 
